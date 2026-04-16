@@ -41,5 +41,20 @@ namespace RemittanceTest.Services
                 return new CancelRemittanceResult(CancelRemittanceResultType.Success, "匯款已成功取消。");
             }
         }
+
+        public IEnumerable<Remittance> GetRemittances()
+        {
+            lock (_lockObj)
+            {
+                return _db.Select(x => new Remittance
+                {
+                    Id = x.Id,
+                    AccountName = x.AccountName,
+                    AccountNumber = x.AccountNumber,
+                    Amount = x.Amount,
+                    Status = x.Status
+                }).ToList();
+            }
+        }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RemittanceTest.Models;
 using RemittanceTest.Services;
+using System.Collections.Generic;
 
 namespace RemittanceTest.Controllers
 {
@@ -12,6 +14,12 @@ namespace RemittanceTest.Controllers
         public RemittanceController(IRemittanceService remittanceService)
         {
             _remittanceService = remittanceService;
+        }
+
+        [HttpGet]
+        public IEnumerable<Remittance> Get()
+        {
+            return _remittanceService.GetRemittances();
         }
 
         [HttpPost("{id}/cancel")]

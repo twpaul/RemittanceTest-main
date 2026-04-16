@@ -27,12 +27,22 @@
         const { createApp, ref } = Vue;
         createApp({
             setup() {
-                // 已提供靜態資料，不需寫 GET API
-                const remittances = ref([
-                    { id: 1, accountName: "測試企業A", amount: 50000, status: 0 },
-                    { id: 2, accountName: "測試企業B", amount: 12000, status: 1 }, // 不可取消
-                    { id: 3, accountName: "測試企業C", amount: 30000, status: 0 }
-                ]);
+                const remittances = ref([]);
+
+                const loadRemittances = async () => {
+                    try {
+                        const response = await fetch('/api/remittance');
+                        if (!response.ok) {
+                            const text = await response.text();
+                            window.alert(`讀取匯款清單失敗：${text}`);
+                            return;
+                        }
+                        remittances.value = await response.json();
+                    }
+                    catch (error) {
+                        window.alert(`讀取匯款清單失敗：${error.message}`);
+                    }
+                };
 
                 const getStatusText = (status) => {
                     const map = { 0: '待覆核', 1: '交易中', 2: '已完成', 9: '已取消' };
@@ -62,11 +72,14 @@
 
                         item.status = 9;
                         window.alert(`取消成功：${text}`);
+                        await loadRemittances();
                     }
                     catch (error) {
                         window.alert(`取消失敗：${error.message}`);
                     }
                 };
+
+                loadRemittances();
 
                 return { remittances, getStatusText, cancelItem };
             }
